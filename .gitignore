@@ -1,0 +1,10 @@
+log/
+*.log
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+__pycache__
