@@ -10,9 +10,9 @@ import pandas as pd
 import typer
 import yaml
 
-import cpt.logging
-from cpt.configuration import COMMON_PROPERTIES
-from cpt.prometheus.const import GIBS
+import kubernetes.logging
+from kubernetes.configuration import COMMON_PROPERTIES
+from kubernetes.prometheus.const import GIBS
 
 NAME_KEY = 'name'
 
@@ -41,7 +41,7 @@ class ManifestTypes(StrEnum):
 
 class ManifestAnalysis:
     def __init__(self, manifest: Path, manifest_type: str):
-        self.logger = logging.getLogger(cpt.logging.fullname(self))
+        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.manifest = manifest
         self.manifest_type = manifest_type
         self.all_docs: List[dict] = self.load_docs()
@@ -135,7 +135,7 @@ def get_resources(resources, key, sub_key):
 
 
 def normalize_metrics(orig_resources: dict, multiply_cpu: float = 1, multiply_mem: float = 1) -> dict:
-    from cpt.helm.common import resource_value
+    from kubernetes.helm.common import resource_value
     normalized_resources = defaultdict(dict)  # solves issue with using missing keys
     l_mem = get_resources(orig_resources, LIMITS, 'memory')
     l_cpu = get_resources(orig_resources, LIMITS, 'cpu')

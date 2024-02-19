@@ -8,7 +8,7 @@ import pandas as pd
 from jinja2 import Template
 from ruyaml.main import YAML
 
-import cpt.logging
+import kubernetes.logging
 from kubernetes.helm.common import resource_value
 
 CONTAINERS_KEY = "spec/template/spec/containers"
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class Sizing:
     """ Creates report from manifest """
     def __init__(self, manifest_file: Path):
-        self.logger = logging.getLogger(cpt.logging.fullname(self))
+        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.interpolated_yaml = manifest_file
         self.all_docs: List = []
         self.container_docs = []

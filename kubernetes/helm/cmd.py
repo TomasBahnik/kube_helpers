@@ -6,13 +6,13 @@ from typing import List
 import typer
 from pandas import DataFrame
 
-from cpt import common
-from cpt.configuration import COMMON_PROPERTIES
-from cpt.helm import kubectl_commands
+from kubernetes import common
+from kubernetes.configuration import COMMON_PROPERTIES
+from kubernetes.helm import kubectl_commands
 
 app = typer.Typer()
 logger = logging.getLogger(__name__)
-DEFAULT_LOGS_DUMP_FOLDER: Path = Path(COMMON_PROPERTIES.cpt_artefacts_dir, 'logs_dumps')
+DEFAULT_LOGS_DUMP_FOLDER: Path = Path(COMMON_PROPERTIES.kubernetes_artefacts_dir, 'logs_dumps')
 DEFAULT_LOGS_DUMP: Path = Path(DEFAULT_LOGS_DUMP_FOLDER, f'{common.time_stamp()}.json')
 
 

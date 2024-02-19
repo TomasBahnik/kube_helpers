@@ -16,9 +16,9 @@ from ruyaml.comments import CommentedSeq as OrderedList
 from ruyaml.main import round_trip_load as yaml_load, round_trip_dump as yaml_dump
 from ruyaml.scalarstring import LiteralScalarString
 
-import cpt.logging
-from cpt import common
-from cpt.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
+import kubernetes.logging
+from kubernetes import common
+from kubernetes.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
 
 EXTRA_ENV = 'extraEnv'
 COMMON_EXTRA_ENV = 'commonExtraEnv'
@@ -44,7 +44,7 @@ class HelmValuesFile:
     SIZING_PATHS = ['resources', 'extraProperties', EXTRA_ENV, 'javaOpts', 'replicas', 'storage/tmp/sizeLimit']
 
     def __init__(self, sizing: str, modules_config: str, use_ordered_dict: bool = True):
-        self.logger = logging.getLogger(cpt.logging.fullname(self))
+        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.sizing_folder = common.check_folder(folder=COMMON_PROPERTIES.sizing_folder)
         self.sizing = sizing
         # config parser for sizing
@@ -353,8 +353,8 @@ class HelmValuesFile:
     def multiply_resources(self, folder: Path = Path.cwd(), multiply_cpu: float = 1, multiply_mem: float = 1,
                            filter_components: Tuple[str, ...] = ('mmmBe',)):
         """ Multiply resources for filtered components"""
-        from cpt.helm.manifest_analysis import normalize_metrics
-        from cpt.helm.manifest_analysis import RESOURCES_KEY
+        from kubernetes.helm.manifest_analysis import normalize_metrics
+        from kubernetes.helm.manifest_analysis import RESOURCES_KEY
         sizing_df: pd.DataFrame = pd.DataFrame(data=self.values_doc).T
         top_level_resources: pd.Series = sizing_df['resources']
         top_level_resources_not_nan = top_level_resources.dropna()

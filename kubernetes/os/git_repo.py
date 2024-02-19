@@ -5,15 +5,15 @@ from typing import List, Tuple, Union, Optional
 
 import typer
 
-import cpt.logging
-from cpt.os import cmd_line
+import kubernetes.logging
+from kubernetes.os import cmd_line
 
 
 class GitRepo:
     PATCH_FAILED_ERROR = "patch failed"
 
     def __init__(self, repo: Path):
-        self.logger = logging.getLogger(cpt.logging.fullname(self))
+        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.repo: Path = repo
 
     def git_cmd(self, cmd: List[str], entry: Union[str, None]) -> Tuple[str, str]:

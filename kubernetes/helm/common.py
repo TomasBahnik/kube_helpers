@@ -1,4 +1,4 @@
-from cpt.constants import RESOURCE_RE, units_conversion
+from kubernetes.constants import RESOURCE_RE, units_conversion
 
 
 def resource_value(value: str | float | int) -> float | int | None:

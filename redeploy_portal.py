@@ -6,12 +6,12 @@ from typing import Optional, List, Tuple
 
 import typer
 
-from cpt.common import time_stamp
-from cpt.configuration import TestEnvProperties
-from cpt.helm import helm_commands
-from cpt.helm.values_file import HelmValuesFile
-from cpt.os import cmd_line, git_repo
-from cpt.redeploy import Redeploy, MINIO_BUCKETS
+from kubernetes.common import time_stamp
+from kubernetes.configuration import TestEnvProperties
+from kubernetes.helm import helm_commands
+from kubernetes.helm.values_file import HelmValuesFile
+from kubernetes.os import cmd_line, git_repo
+from kubernetes.redeploy import Redeploy, MINIO_BUCKETS
 from redeploy_helm import HELM_APPLICATION_NOTES_KEY
 
 ORIGINAL_VALUES_YAML = 'original_values.yaml'
@@ -22,8 +22,8 @@ class RedeployPortal(Redeploy):
     def __init__(self, test_env: str, branch: Optional[str], sizing: Optional[str], modules: Optional[str],
                  multiply_resources: Optional[Tuple[str, ...]]):
         super().__init__()
-        import cpt.logging
-        self.logger = logging.getLogger(cpt.logging.fullname(self))
+        import kubernetes.logging
+        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.properties = TestEnvProperties(test_env=test_env)
         self.sizing = sizing
         self.modules = modules
@@ -77,7 +77,7 @@ class RedeployPortal(Redeploy):
         with open(manifest_file_path, "w", encoding='utf-8') as manifest_file:
             manifest_file.writelines(manifest)
         typer.echo(f"manifest saved to {manifest_file_path}")
-        from cpt.helm.sizing import Sizing
+        from kubernetes.helm.sizing import Sizing
         sizing = Sizing(manifest_file=Path(self.artifacts_time_stamp_folder, manifest_filename))
         os.makedirs(self.artifacts_time_stamp_folder, exist_ok=True)
         typer.echo(f"Save '{self.sizing}' sizing to {self.artifacts_time_stamp_folder.resolve()}")

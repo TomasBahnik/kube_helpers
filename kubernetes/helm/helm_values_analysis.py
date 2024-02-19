@@ -10,8 +10,8 @@ import typer
 from flatten_dict import flatten, unflatten
 from ruyaml.main import YAML
 
-import cpt.common
-from cpt.git import git_commands
+import kubernetes.common
+from kubernetes.git import git_commands
 
 app = typer.Typer()
 yaml = YAML()
@@ -86,9 +86,9 @@ class HelmValuesAnalysis:
 
     def set_value_non_value_files(self, helm_charts_repo: Path, filename_contains: str = "values",
                                   file_contains: str = 'resources:'):
-        all_yaml_files = set(cpt.common.list_files(folder=helm_charts_repo, ends_with=".yaml"))
-        yaml_file_contains = set(cpt.common.files_containing(files=all_yaml_files, contains=file_contains))
-        yaml_file_name_contains = set(cpt.common.list_files(folder=helm_charts_repo,
+        all_yaml_files = set(kubernetes.common.list_files(folder=helm_charts_repo, ends_with=".yaml"))
+        yaml_file_contains = set(kubernetes.common.files_containing(files=all_yaml_files, contains=file_contains))
+        yaml_file_name_contains = set(kubernetes.common.list_files(folder=helm_charts_repo,
                                                             ends_with=".yaml", contains=filename_contains))
         yaml_files_union: set = yaml_file_contains.union(yaml_file_name_contains)
         self.value_yaml_files = yaml_files_union
@@ -212,7 +212,7 @@ class HelmValuesAnalysis:
                 self.value_flat_dict[tuple_key] = decoded_val
         # unflatten and url decode
         doc = unflatten(self.value_flat_dict)
-        with open(f"bin/pycpt/helm/properties.yaml", 'w') as outfile:
+        with open(f"bin/pykubernetes/helm/properties.yaml", 'w') as outfile:
             yaml.dump(data=doc, stream=outfile)
 
 
