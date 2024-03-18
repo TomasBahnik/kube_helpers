@@ -15,8 +15,7 @@ from ruyaml.comments import CommentedMap as OrderedDict
 from ruyaml.comments import CommentedSeq as OrderedList
 from ruyaml.main import round_trip_load as yaml_load, round_trip_dump as yaml_dump
 from ruyaml.scalarstring import LiteralScalarString
-
-import kubernetes.logging
+from loguru import logger
 from kubernetes import common
 from kubernetes.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
 
@@ -44,7 +43,6 @@ class HelmValuesFile:
     SIZING_PATHS = ['resources', 'extraProperties', EXTRA_ENV, 'javaOpts', 'replicas', 'storage/tmp/sizeLimit']
 
     def __init__(self, sizing: str, modules_config: str, use_ordered_dict: bool = True):
-        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.sizing_folder = common.check_folder(folder=COMMON_PROPERTIES.sizing_folder)
         self.sizing = sizing
         # config parser for sizing
@@ -90,17 +88,17 @@ class HelmValuesFile:
         """ Load existing values yaml file """
         common.check_file(file=values_file)
         with open(values_file, 'r') as f:
-            self.logger.info(f"Loading values file from {values_file.resolve()}")
+            logger.info(f"Loading values file from {values_file.resolve()}")
             values_doc = yaml_load(f)
             return values_doc
 
     def dump_values_file(self, dump_file: Path = None):
         if dump_file:
-            self.logger.info(f"Dumping perf values to {dump_file.resolve()}")
+            logger.info(f"Dumping perf values to {dump_file.resolve()}")
             with open(dump_file, 'w') as f:
                 yaml_dump(self.values_doc, f, indent=2 * YAML_INDENTATION, block_seq_indent=YAML_INDENTATION)
         else:
-            self.logger.info(f"Dump file not specified")
+            logger.info(f"Dump file not specified")
 
     @staticmethod
     def str_bool(value: Any) -> Any:
@@ -121,9 +119,9 @@ class HelmValuesFile:
         try:
             value = self.str_bool(value)
             dpath.merge(dst_dict[key], value)
-            self.logger.info(f"{key} found, merge {value}")
+            logger.info(f"{key} found, merge {value}")
         except KeyError:
-            self.logger.warning(f"{key} not found, create new with value {value}")
+            logger.warning(f"{key} not found, create new with value {value}")
             dpath.new(dst_dict, key, value)
 
     def sizing_value(self, component: str, key: str):
@@ -150,7 +148,7 @@ class HelmValuesFile:
         for section in self.sizing_sections:
             # extra_envs returns both key and value as one piece of data
             key = f"{section}/{rel_path}" if rel_path is not None else section
-            self.logger.debug(f"Setting values for {section}/{rel_path}")
+            logger.debug(f"Setting values for {section}/{rel_path}")
             self.merge_property(key=key, value=function(section), dst_dict=self.values_doc)
 
     def resources(self, component: str) -> OrderedDict:

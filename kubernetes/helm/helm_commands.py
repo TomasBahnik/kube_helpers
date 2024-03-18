@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import List
 
@@ -10,8 +9,6 @@ HELM_MAIN_COMMAND = 'helm'
 HELM_NS = 'product'
 HELM_APP_NAME = 'ataccama-one'
 HELM_CHARTS_PATH: Path = COMMON_PROPERTIES.charts_path
-
-logger = logging.getLogger(__name__)
 
 
 def uninstall(helm_app_name: str = HELM_APP_NAME, helm_ns: str = HELM_NS) -> List[str]:

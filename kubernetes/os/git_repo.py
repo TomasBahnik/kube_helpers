@@ -1,11 +1,10 @@
-import logging
 import os
 from pathlib import Path
 from typing import List, Tuple, Union, Optional
 
 import typer
+from loguru import logger
 
-import kubernetes.logging
 from kubernetes.os import cmd_line
 
 
@@ -13,7 +12,7 @@ class GitRepo:
     PATCH_FAILED_ERROR = "patch failed"
 
     def __init__(self, repo: Path):
-        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
+
         self.repo: Path = repo
 
     def git_cmd(self, cmd: List[str], entry: Union[str, None]) -> Tuple[str, str]:
@@ -40,7 +39,7 @@ class GitRepo:
         if self.PATCH_FAILED_ERROR in std_err:
             msg = f"{self.git_apply_patch.__name__} failed with {std_err}. Try with --whitespace=fix"
             typer.echo(message=msg)
-            self.logger.info(msg=msg)
+            logger.info(msg=msg)
             std_out, std_err = self.git_cmd(cmd=['apply', '--whitespace=fix'], entry=entry)
             cond: bool = self.PATCH_FAILED_ERROR in std_err
             assert not cond
@@ -51,7 +50,7 @@ class GitRepo:
             patches = []
         msg = f"Preparing git repo {self.repo}"
         typer.echo(message=msg)
-        self.logger.info(msg=msg)
+        logger.info(msg=msg)
         self.git_checkout(entry='.')
         self.git_checkout(entry=branch)
         self.git_pull_from_origin(branch=branch)

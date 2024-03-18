@@ -9,8 +9,8 @@ import dpath
 import pandas as pd
 import typer
 import yaml
+from loguru import logger
 
-import kubernetes.logging
 from kubernetes.configuration import COMMON_PROPERTIES
 from kubernetes.prometheus.const import GIBS
 
@@ -29,7 +29,7 @@ INIT_CONTAINERS_KEY = f"spec/template/{POD_INIT_CONTAINERS_KEY}"
 # only in Deployment
 REPLICAS_PATH = "spec/replicas"
 
-logger = logging.getLogger(__name__)
+
 
 
 class ManifestTypes(StrEnum):
@@ -41,7 +41,6 @@ class ManifestTypes(StrEnum):
 
 class ManifestAnalysis:
     def __init__(self, manifest: Path, manifest_type: str):
-        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.manifest = manifest
         self.manifest_type = manifest_type
         self.all_docs: List[dict] = self.load_docs()
@@ -109,7 +108,7 @@ class ManifestAnalysis:
     def extract_volumes(self):
         resources_dict = {}
         for doc in self.kind_docs:
-            self.logger.debug("Processing doc kind : {}".format(doc["kind"]))
+            logger.debug("Processing doc kind : {}".format(doc["kind"]))
             volumes = dpath.get(obj=doc, glob="spec/volumeClaimTemplates", default=None)
             service_name = dpath.get(obj=doc, glob="spec/serviceName", default=None)
             if volumes and len(volumes) == 1:

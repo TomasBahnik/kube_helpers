@@ -1,18 +1,16 @@
 import json
-import logging
 from typing import List, Union
 
 import typer
+from kubernetes.prometheus.const import PRODUCT_NS
+from loguru import logger
 
 from kubernetes.helm.helm_commands import get_notes
 from kubernetes.os.cmd_line import RunCommand, run_cmd
-from kubernetes.prometheus.const import PRODUCT_NS
 
 JSON_OUTPUT = ['-o', 'json']
 PRODUCT_NS_OPTION = ['-n', PRODUCT_NS]
 DEFAULT_SINCE_OPTION = ['--since', '4h']
-
-logger = logging.getLogger(__name__)
 
 
 def current_context():

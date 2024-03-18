@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional, List, Tuple
 
 import typer
+from loguru import logger
 
 from kubernetes.common import time_stamp
 from kubernetes.configuration import TestEnvProperties
@@ -22,8 +23,6 @@ class RedeployPortal(Redeploy):
     def __init__(self, test_env: str, branch: Optional[str], sizing: Optional[str], modules: Optional[str],
                  multiply_resources: Optional[Tuple[str, ...]]):
         super().__init__()
-        import kubernetes.logging
-        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.properties = TestEnvProperties(test_env=test_env)
         self.sizing = sizing
         self.modules = modules
@@ -95,13 +94,13 @@ class RedeployPortal(Redeploy):
 
     def portal_upgrade(self, dry_run: bool, get_values: bool):
         if not get_values:
-            self.logger.info(f'loading {ORIGINAL_VALUES_YAML} from {self.artifact_folder}')
+            logger.info(f'loading {ORIGINAL_VALUES_YAML} from {self.artifact_folder}')
             orig_values_file = Path(self.artifact_folder, ORIGINAL_VALUES_YAML)
             if not orig_values_file.exists():
                 raise FileExistsError(orig_values_file)
         else:
             # if folder specified artifact is saved to it and path is returned
-            self.logger.info(f'loading {ORIGINAL_VALUES_YAML} from {self.namespace} env')
+            logger.info(f'loading {ORIGINAL_VALUES_YAML} from {self.namespace} env')
             orig_values_file: Path = helm_commands.get(command='values', helm_app_name=self.namespace,
                                                        helm_ns=self.namespace, folder=self.artifacts_time_stamp_folder,
                                                        file_name=ORIGINAL_VALUES_YAML)
@@ -157,7 +156,6 @@ class RedeployPortal(Redeploy):
 
 
 app = typer.Typer()
-logger = logging.getLogger(__name__)
 
 
 @app.command()

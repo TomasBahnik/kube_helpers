@@ -1,14 +1,13 @@
 import json
-import logging
 from pathlib import Path
 from typing import List
 
 import dpath
 import pandas as pd
 from jinja2 import Template
+from loguru import logger
 from ruyaml.main import YAML
 
-import kubernetes.logging
 from kubernetes.helm.common import resource_value
 
 CONTAINERS_KEY = "spec/template/spec/containers"
@@ -17,13 +16,12 @@ yaml = YAML()
 yaml.preserve_quotes = True
 #  https://yaml.readthedocs.io/en/latest/api.html#duplicate-keys
 yaml.allow_duplicate_keys = True
-logger = logging.getLogger(__name__)
 
 
 class Sizing:
     """ Creates report from manifest """
+
     def __init__(self, manifest_file: Path):
-        self.logger = logging.getLogger(kubernetes.logging.fullname(self))
         self.interpolated_yaml = manifest_file
         self.all_docs: List = []
         self.container_docs = []
@@ -39,7 +37,7 @@ class Sizing:
     def extract_resources(self):
         resources_dict = {}
         for doc in self.container_docs:
-            self.logger.debug("Processing doc kind : {}".format(doc["kind"]))
+            logger.debug("Processing doc kind : {}".format(doc["kind"]))
             replicas = dpath.get(obj=doc, glob="spec/replicas", default=None)
             container = dpath.get(obj=doc, glob=CONTAINERS_KEY)[0]
             # spec.template.spec.containers[0].env
@@ -55,14 +53,14 @@ class Sizing:
                 resources_dict[name] = resolve_empty_requests(dict(resources))
             else:
                 # can't explicitly access keys limits and requests - leads to unclear html template
-                self.logger.debug("Add empty resources for {}".format(name))
+                logger.debug("Add empty resources for {}".format(name))
                 resources_dict[name] = {'limits': {}, 'requests': {}, 'replicas': {}}
         return resources_dict
 
     def extract_volumes(self):
         resources_dict = {}
         for doc in self.kind_docs:
-            self.logger.debug("Processing doc kind : {}".format(doc["kind"]))
+            logger.debug("Processing doc kind : {}".format(doc["kind"]))
             volumes = dpath.get(obj=doc, glob="spec/volumeClaimTemplates", default=None)
             service_name = dpath.get(obj=doc, glob="spec/serviceName", default=None)
             if volumes and len(volumes) == 1:
@@ -88,7 +86,7 @@ class Sizing:
         volumes = self.extract_volumes()
         properties = self.extract_properties()
         metrics.update({'volumes': volumes})
-        self.logger.info(f"Create sizing from {self.interpolated_yaml} to {output_json}")
+        logger.info(f"Create sizing from {self.interpolated_yaml} to {output_json}")
         with open(output_json, "w") as json_file:
             json.dump(metrics, json_file, indent=4, sort_keys=True)
         with open(output_props, "w") as props_file:
