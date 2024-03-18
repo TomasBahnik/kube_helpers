@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 from typing import List, Tuple, Union, Optional
 
-import typer
 from loguru import logger
 
 from kubernetes.os import cmd_line
@@ -38,8 +37,7 @@ class GitRepo:
         # check for error: patch failed might be different git version
         if self.PATCH_FAILED_ERROR in std_err:
             msg = f"{self.git_apply_patch.__name__} failed with {std_err}. Try with --whitespace=fix"
-            typer.echo(message=msg)
-            logger.info(msg=msg)
+            logger.info(msg)
             std_out, std_err = self.git_cmd(cmd=['apply', '--whitespace=fix'], entry=entry)
             cond: bool = self.PATCH_FAILED_ERROR in std_err
             assert not cond
@@ -49,8 +47,7 @@ class GitRepo:
         if patches is None:
             patches = []
         msg = f"Preparing git repo {self.repo}"
-        typer.echo(message=msg)
-        logger.info(msg=msg)
+        logger.info(msg)
         self.git_checkout(entry='.')
         self.git_checkout(entry=branch)
         self.git_pull_from_origin(branch=branch)

@@ -1,4 +1,3 @@
-import logging
 import os
 from collections import defaultdict
 from enum import StrEnum
@@ -9,10 +8,10 @@ import dpath
 import pandas as pd
 import typer
 import yaml
+from kubernetes.const import GIBS
 from loguru import logger
 
 from kubernetes.configuration import COMMON_PROPERTIES
-from kubernetes.prometheus.const import GIBS
 
 NAME_KEY = 'name'
 

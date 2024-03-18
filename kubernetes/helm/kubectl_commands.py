@@ -2,7 +2,7 @@ import json
 from typing import List, Union
 
 import typer
-from kubernetes.prometheus.const import PRODUCT_NS
+from kubernetes.const import PRODUCT_NS
 from loguru import logger
 
 from kubernetes.helm.helm_commands import get_notes

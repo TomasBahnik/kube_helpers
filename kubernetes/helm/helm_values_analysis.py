@@ -55,7 +55,7 @@ class HelmValuesAnalysis:
         with open(value_file, 'r') as vf:
             try:
                 docs: List = list(yaml.load_all(vf))
-                logger.debug(msg=f"Loaded {len(docs)} from {value_file}")
+                logger.debug(f"Loaded {len(docs)} from {value_file}")
                 # self.docs = docs
                 for doc in docs:
                     if isinstance(doc, dict):
@@ -63,7 +63,7 @@ class HelmValuesAnalysis:
                         self.value_docs_flat.append(doc_flat)
                         self.value_file_to_doc_flat[value_file] = doc_flat
                     else:
-                        logger.error(msg=f"{value_file.resolve()} contains non dict doc = {doc}")
+                        logger.error(f"{value_file.resolve()} contains non dict doc = {doc}")
             except Exception as e:
                 print(e)
 

@@ -42,7 +42,7 @@ def get_pod_logs(from_file: bool = typer.Option(True, help="Load logs from file 
             logger.info(f'dumping to {DEFAULT_LOGS_DUMP.resolve()}')
             json.dump(logs, json_file, indent=4, sort_keys=True)
     for k, v in logs.items():
-        logger.info(message=f'{k}: log length: {len(v)}')
+        logger.info(f'{k}: log length: {len(v)}')
 
 
 if __name__ == "__main__":
