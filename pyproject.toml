@@ -1,0 +1,57 @@
+[tool.black]
+line-length = 120
+target-version = ['py311']
+include = '\.py$'
+extend-exclude = '_pb2\.py$'
+
+[tool.mypy]
+files = "./"
+ignore_missing_imports = true
+
+[tool.poetry]
+name = "kubernetes_utils"
+version = "0.1.0"
+description = "Manifest and values file analysis and generation."
+authors = ["Bahnik, Tomas <tomas.bahnik@email.cz>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.11"
+pandas = "2.1.3"
+flatten-dict = "^0.4.2"
+ruyaml = "^0.91.0"
+dpath = "^2.1.6"
+tabulate = "^0.9.0"
+jinja2 = "^3.1.3"
+
+# Infrastructure
+typer = "^0.9.0"
+pydantic = "^2.5.3"
+pydantic-settings = "^2.1.0"
+loguru = "^0.7.2"
+
+# Static type checking
+mypy = "^1.8.0"
+
+# Testing
+pytest = "^7.4.4"
+# pytest-cov is a plugin for pytest that generates coverage reports.
+pytest-cov = "^4.1.0"
+
+[tool.poetry.group.dev.dependencies]
+# Linting + formatting
+# code formatter
+black = "^24.1.1"
+flake8 = "^7.0.0"
+# better list/set/dict comprehensions.
+flake8-comprehensions = "^3.14.0"
+# Linter that checks docstrings of functions, methods and classes.
+flake8-docstrings = "^1.7.0"
+# flake8 plugin that checks for commented out code.
+flake8-eradicate = "^1.5.0"
+flake8-fixme = "^1.1.1"
+# heck if the imports on your python files are sorted
+flake8-isort = "^6.1.1"
+flake8-use-fstring = "^1.4"
+flake8-unused-arguments = "^0.0.13"
+isort = "^5.13.2"
