@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     pycpt_home: Path = Path(__file__).parent
     pycpt_artefacts: Path = Path(pycpt_home, "../cpt_artefacts").resolve()
     data: Path = Path(pycpt_artefacts, "data")
+    helm_perf_values_dir: Path = Path(pycpt_artefacts, "helm_builds")
     # test data is in the repo
     test_data: Path = Path(pycpt_home, "tests", "data")
     test_output: Path = Path(pycpt_home, "tests", "output")

@@ -2,16 +2,15 @@ import os
 from collections import defaultdict
 from enum import StrEnum
 from pathlib import Path
-from typing import List
 
 import dpath
 import pandas as pd
 import typer
-import yaml
-from kubernetes.const import GIBS
 from loguru import logger
+from ruyaml.main import YAML
 
-from kubernetes.configuration import COMMON_PROPERTIES
+from kubernetes.const import GIBS
+from settings import settings
 
 NAME_KEY = 'name'
 
@@ -28,7 +27,7 @@ INIT_CONTAINERS_KEY = f"spec/template/{POD_INIT_CONTAINERS_KEY}"
 # only in Deployment
 REPLICAS_PATH = "spec/replicas"
 
-
+yaml = YAML()
 
 
 class ManifestTypes(StrEnum):
@@ -42,9 +41,9 @@ class ManifestAnalysis:
     def __init__(self, manifest: Path, manifest_type: str):
         self.manifest = manifest
         self.manifest_type = manifest_type
-        self.all_docs: List[dict] = self.load_docs()
-        self.kind_docs: List[dict] = [doc for doc in self.all_docs if 'kind' in doc.keys()]
-        self.pods: List[dict] = [doc for doc in self.kind_docs if self.kind_docs if doc['kind'] == 'Pod']
+        self.all_docs: list[dict] = self.load_docs()
+        self.kind_docs: list[dict] = [doc for doc in self.all_docs if 'kind' in doc.keys()]
+        self.pods: list[dict] = [doc for doc in self.kind_docs if self.kind_docs if doc['kind'] == 'Pod']
         self.deployments = [doc for doc in self.kind_docs if self.kind_docs if doc['kind'] == 'Deployment']
         self.jobs = [doc for doc in self.kind_docs if self.kind_docs if doc['kind'] == 'Job']
         self.replicas = [dpath.get(doc, REPLICAS_PATH, default={}) for doc in self.all_docs]
@@ -58,7 +57,7 @@ class ManifestAnalysis:
 
     def load_docs(self):
         with open(self.manifest, 'r') as yaml_file:
-            all_docs = list(yaml.safe_load_all(yaml_file))
+            all_docs = list(yaml.load_all(yaml_file))
             if self.manifest_type == ManifestTypes.MANIFEST:
                 return all_docs
             else:
@@ -82,7 +81,7 @@ class ManifestAnalysis:
 
     @staticmethod
     def get_resources(source):
-        ret: List[dict] = []
+        ret: list[dict] = []
         for containers in source:
             for container in containers:
                 d = {NAME_KEY: container[NAME_KEY], RESOURCES_KEY: dpath.get(container, RESOURCES_KEY, default={})}
@@ -91,7 +90,7 @@ class ManifestAnalysis:
 
     def extract_resources(self, linkerd: bool):
         container_resources = self.resources + self.init_resources
-        normalized_resources: List[dict] = [
+        normalized_resources: list[dict] = [
             {NAME_KEY: c_r[NAME_KEY], RESOURCES_KEY: normalize_metrics(c_r[RESOURCES_KEY])}
             for c_r in container_resources]
         if not linkerd:
@@ -201,7 +200,7 @@ def resources(file: Path = typer.Option(..., help='Path of yaml file', dir_okay=
 def helm_get(command: str = typer.Option(..., "-c", help='values, notes, manifest'),
              namespace: str = typer.Option(..., "-n", help='deployment namespace')):
     from kubernetes.helm import helm_commands
-    folder = Path(COMMON_PROPERTIES.helm_perf_values_dir, 'helm_get')
+    folder = settings.helm_perf_values_dir
     os.makedirs(folder, exist_ok=True)
     typer.echo(f'folder: {folder}')
     helm_commands.get(command=command, helm_app_name=namespace, helm_ns=namespace, folder=folder)
