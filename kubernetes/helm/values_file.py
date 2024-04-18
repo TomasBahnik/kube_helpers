@@ -9,12 +9,12 @@ from typing import List, Callable, Any, Union, Optional, Dict, Tuple
 import dpath
 import pandas as pd
 import typer
-import yaml
+from loguru import logger
 from ruyaml.comments import CommentedMap as OrderedDict
 from ruyaml.comments import CommentedSeq as OrderedList
 from ruyaml.main import round_trip_load as yaml_load, round_trip_dump as yaml_dump
 from ruyaml.scalarstring import LiteralScalarString
-from loguru import logger
+
 from kubernetes import common
 from kubernetes.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
 
@@ -342,7 +342,7 @@ class HelmValuesFile:
         msg = f"Writing {sizing_yaml} and {sizing_json}"
         typer.echo(msg)
         with open(sizing_yaml, 'w') as f:
-            yaml.dump(self.values_doc, f, width=99999)
+            yaml_dump(self.values_doc, f, width=99999)
         with open(sizing_json, 'w') as f:
             json.dump(self.values_doc, f, indent=2)
         return sizing_yaml.resolve()
@@ -365,7 +365,7 @@ class HelmValuesFile:
         v_f = filtered_df.to_dict()
         sizing_yaml = Path(folder, f'{self.sizing}_{multiply_cpu}x_cpu_{multiply_mem}x_mem.yaml')
         with open(sizing_yaml, 'w') as f:
-            yaml.dump(v_f["NORMALIZED_RESOURCES"], f, width=99999)
+            yaml_dump(v_f["NORMALIZED_RESOURCES"], f, width=99999)
         return sizing_yaml.resolve()
 
     def add_section(self, section, is_app_template: bool = False):
@@ -438,7 +438,7 @@ def app_tmpl(sizings: List[str] = typer.Option(BASIC_SIZINGS),
         typer.echo(msg)
         data = {'chartRootKey': section.replace('/', '.'), 'default': {}, 'sizing': section_sizing_dict[section]}
         with open(sizing_yaml, 'w') as f:
-            yaml.dump(data=data, stream=f, indent=2, width=5000)
+            yaml_dump(data=data, stream=f, indent=2, width=5000)
         with open(sizing_json, 'w') as f:
             json.dump(obj=data, fp=f, indent=2)
 
