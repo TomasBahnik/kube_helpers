@@ -350,8 +350,8 @@ class HelmValuesFile:
     def multiply_resources(self, folder: Path = Path.cwd(), multiply_cpu: float = 1, multiply_mem: float = 1,
                            filter_components: Tuple[str, ...] = ('mmmBe',)):
         """ Multiply resources for filtered components"""
-        from kubernetes.helm.manifest_analysis import normalize_metrics
-        from kubernetes.helm.manifest_analysis import RESOURCES_KEY
+        from manifest_analysis import normalize_metrics
+        from manifest_analysis import RESOURCES_KEY
         sizing_df: pd.DataFrame = pd.DataFrame(data=self.values_doc).T
         top_level_resources: pd.Series = sizing_df['resources']
         top_level_resources_not_nan = top_level_resources.dropna()
