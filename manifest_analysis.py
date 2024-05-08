@@ -9,7 +9,7 @@ import typer
 from loguru import logger
 from ruyaml.main import YAML
 
-from kubernetes.const import GIBS
+from cmdline.const import GIBS
 from settings import settings
 
 NAME_KEY = 'name'
@@ -132,7 +132,7 @@ def get_resources(resources, key, sub_key):
 
 
 def normalize_metrics(orig_resources: dict, multiply_cpu: float = 1, multiply_mem: float = 1) -> dict:
-    from kubernetes.helm.common import resource_value
+    from cmdline.helm.common import resource_value
     normalized_resources = defaultdict(dict)  # solves issue with using missing keys
     l_mem = get_resources(orig_resources, LIMITS, 'memory')
     l_cpu = get_resources(orig_resources, LIMITS, 'cpu')
@@ -191,7 +191,7 @@ def resources(file: Path = typer.Option(..., help='Path of yaml file', dir_okay=
     typer.echo(totals(data[RESOURCES_KEY], res_type=LIMITS))
     typer.echo(totals(data[RESOURCES_KEY], res_type=REQUESTS))
     if manifest_type == ManifestTypes.MANIFEST.value:
-        from kubernetes.helm.sizing import Sizing
+        from cmdline.helm.sizing import Sizing
         sizing = Sizing(manifest_file=Path(folder, filename))
         sizing.save_sizing(save_path=folder, base_file_name=f'{bare_filename}_sizing')
 
@@ -199,7 +199,7 @@ def resources(file: Path = typer.Option(..., help='Path of yaml file', dir_okay=
 @app.command()
 def helm_get(command: str = typer.Option(..., "-c", help='values, notes, manifest'),
              namespace: str = typer.Option(..., "-n", help='deployment namespace')):
-    from kubernetes.helm import helm_commands
+    from cmdline.helm import helm_commands
     folder = settings.helm_perf_values_dir
     os.makedirs(folder, exist_ok=True)
     typer.echo(f'folder: {folder}')

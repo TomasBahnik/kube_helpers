@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import List
 
-from kubernetes.common import time_stamp
-from kubernetes.configuration import COMMON_PROPERTIES
-from kubernetes.os.cmd_line import run_cmd
+from cmdline.common import time_stamp
+from cmdline.configuration import COMMON_PROPERTIES
+from cmdline.run_cmd import run_cmd
 
 HELM_MAIN_COMMAND = 'helm'
 HELM_NS = 'product'

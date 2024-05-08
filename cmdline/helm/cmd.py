@@ -6,9 +6,9 @@ import typer
 from loguru import logger
 from pandas import DataFrame
 
-from kubernetes import common
-from kubernetes.configuration import COMMON_PROPERTIES
-from kubernetes.helm import kubectl_commands
+from cmdline import common
+from cmdline.configuration import COMMON_PROPERTIES
+from cmdline.helm import kubectl_commands
 
 app = typer.Typer()
 

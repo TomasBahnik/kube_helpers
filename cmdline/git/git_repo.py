@@ -4,7 +4,7 @@ from typing import List, Tuple, Union, Optional
 
 from loguru import logger
 
-from kubernetes.os import cmd_line
+from cmdline.run_cmd import run_cmd
 
 
 class GitRepo:
@@ -18,7 +18,7 @@ class GitRepo:
         cwd = os.getcwd()
         os.chdir(self.repo)
         cmd = ['git'] + cmd + [entry] if entry else ['git'] + cmd
-        std, err = cmd_line.run_cmd(cmd=cmd)
+        std, err = run_cmd(cmd=cmd)
         os.chdir(cwd)
         return std, err
 

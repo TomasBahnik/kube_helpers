@@ -2,11 +2,11 @@ import json
 from typing import List, Union
 
 import typer
-from kubernetes.const import PRODUCT_NS
+from cmdline.const import PRODUCT_NS
 from loguru import logger
 
-from kubernetes.helm.helm_commands import get_notes
-from kubernetes.os.cmd_line import RunCommand, run_cmd
+from cmdline.helm.helm_commands import get_notes
+from cmdline.run_cmd import RunCommand, run_cmd
 
 JSON_OUTPUT = ['-o', 'json']
 PRODUCT_NS_OPTION = ['-n', PRODUCT_NS]

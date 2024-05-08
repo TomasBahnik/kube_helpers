@@ -15,8 +15,8 @@ from ruyaml.comments import CommentedSeq as OrderedList
 from ruyaml.main import round_trip_load as yaml_load, round_trip_dump as yaml_dump
 from ruyaml.scalarstring import LiteralScalarString
 
-from kubernetes import common
-from kubernetes.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
+from cmdline import common
+from cmdline.configuration import Configuration, TestEnvProperties, COMMON_PROPERTIES
 
 EXTRA_ENV = 'extraEnv'
 COMMON_EXTRA_ENV = 'commonExtraEnv'

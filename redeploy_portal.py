@@ -6,12 +6,13 @@ from typing import Optional, List, Tuple
 import typer
 from loguru import logger
 
-from kubernetes.common import time_stamp
-from kubernetes.configuration import TestEnvProperties
-from kubernetes.helm import helm_commands
-from kubernetes.helm.values_file import HelmValuesFile
-from kubernetes.os import cmd_line, git_repo
-from kubernetes.redeploy import Redeploy, MINIO_BUCKETS
+from cmdline.common import time_stamp
+from cmdline.configuration import TestEnvProperties
+from cmdline.helm import helm_commands
+from cmdline.helm.values_file import HelmValuesFile
+from cmdline.git import git_repo
+from cmdline.redeploy import Redeploy, MINIO_BUCKETS
+from cmdline.run_cmd import run_cmd
 from redeploy_helm import HELM_APPLICATION_NOTES_KEY
 
 ORIGINAL_VALUES_YAML = 'original_values.yaml'
@@ -46,14 +47,14 @@ class RedeployPortal(Redeploy):
             os.makedirs(self.artifacts_time_stamp_folder, exist_ok=True)
 
     def delete_app(self, properties: TestEnvProperties, helm_app_name: Optional[str], namespace: Optional[str]):
-        cmd_line.run_cmd(helm_commands.uninstall(helm_app_name=helm_app_name, helm_ns=namespace))
+        run_cmd(helm_commands.uninstall(helm_app_name=helm_app_name, helm_ns=namespace))
 
     def delete_p_v(self, properties: TestEnvProperties, namespace: str):
         raise NotImplementedError
 
     def delete_p_v_portal(self):
         cmd = ['kubectl', 'delete', '--all', 'pvc', '-n', self.namespace]
-        cmd_line.run_cmd(cmd)
+        run_cmd(cmd)
 
     def build_deployment(self, properties: TestEnvProperties):
         pass
@@ -64,7 +65,7 @@ class RedeployPortal(Redeploy):
                           helm_ns: str) -> str:
         cmd_base = helm_commands.deploy(command=command, helm_app_name=helm_app_name, helm_ns=helm_ns, dry_run=dry_run)
         cmd = cmd_base + values_files
-        std_out, std_err = cmd_line.run_cmd(cmd)
+        std_out, std_err = run_cmd(cmd)
         return std_out
 
     def save_analyze_manifest(self, manifest: str):
@@ -75,7 +76,7 @@ class RedeployPortal(Redeploy):
         with open(manifest_file_path, "w", encoding='utf-8') as manifest_file:
             manifest_file.writelines(manifest)
         typer.echo(f"manifest saved to {manifest_file_path}")
-        from kubernetes.helm.sizing import Sizing
+        from cmdline.helm.sizing import Sizing
         sizing = Sizing(manifest_file=Path(self.artifacts_time_stamp_folder, manifest_filename))
         os.makedirs(self.artifacts_time_stamp_folder, exist_ok=True)
         typer.echo(f"Save '{self.sizing}' sizing to {self.artifacts_time_stamp_folder.resolve()}")
@@ -148,7 +149,7 @@ class RedeployPortal(Redeploy):
         helm_charts_repo = git_repo.GitRepo(repo=self.properties.helm_charts_repo)
         helm_charts_repo.prepare_git_repo(branch=self.branch, patches=[])
         helm_charts_repo.add_notes(notes=self.properties.get_runtime_property(HELM_APPLICATION_NOTES_KEY))
-        cmd_line.run_cmd(cmd=helm_commands.update_dependency())
+        run_cmd(cmd=helm_commands.update_dependency())
 
     def deploy_app(self, properties: TestEnvProperties):
         pass

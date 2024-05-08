@@ -8,7 +8,7 @@ from jinja2 import Template
 from loguru import logger
 from ruyaml.main import YAML
 
-from kubernetes.helm.common import resource_value
+from cmdline.helm.common import resource_value
 
 CONTAINERS_KEY = "spec/template/spec/containers"
 

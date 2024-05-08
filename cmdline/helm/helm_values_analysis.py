@@ -10,8 +10,8 @@ from flatten_dict import flatten, unflatten
 from loguru import logger
 from ruyaml.main import YAML
 
-import kubernetes.common
-from kubernetes.git import git_commands
+import cmdline.common
+from cmdline.git import git_commands
 
 app = typer.Typer()
 yaml = YAML()
@@ -85,10 +85,10 @@ class HelmValuesAnalysis:
 
     def set_value_non_value_files(self, helm_charts_repo: Path, filename_contains: str = "values",
                                   file_contains: str = 'resources:'):
-        all_yaml_files = set(kubernetes.common.list_files(folder=helm_charts_repo, ends_with=".yaml"))
-        yaml_file_contains = set(kubernetes.common.files_containing(files=all_yaml_files, contains=file_contains))
-        yaml_file_name_contains = set(kubernetes.common.list_files(folder=helm_charts_repo,
-                                                                   ends_with=".yaml", contains=filename_contains))
+        all_yaml_files = set(cmdline.common.list_files(folder=helm_charts_repo, ends_with=".yaml"))
+        yaml_file_contains = set(cmdline.common.files_containing(files=all_yaml_files, contains=file_contains))
+        yaml_file_name_contains = set(cmdline.common.list_files(folder=helm_charts_repo,
+                                                                ends_with=".yaml", contains=filename_contains))
         yaml_files_union: set = yaml_file_contains.union(yaml_file_name_contains)
         self.value_yaml_files = yaml_files_union
         self.non_value_yaml_files = all_yaml_files - self.value_yaml_files
